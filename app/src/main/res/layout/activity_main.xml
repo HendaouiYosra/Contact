@@ -5,35 +5,51 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D3FFFFFF"
     android:gravity="center"
     android:orientation="vertical"
+    android:background="@drawable/background"
     tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/textView3"
         style="@style/st_titre1"
         android:fontFamily="serif"
-        android:text="Authentification"
+        android:text="Welcome !"
         android:textAlignment="center"
-        android:textColor="#000000"
+        android:textColor="#FFFFFF"
         android:textSize="24sp" />
 
     <EditText
         android:id="@+id/ednom_auth"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="61dp"
+        android:layout_margin="16dp"
+        android:background="#FFFFFF"
+        android:backgroundTint="#FFFFFF"
         android:ems="10"
-        android:hint="saisir votre nom"
+        android:hint="  enter your username"
         android:inputType="text" />
 
     <EditText
         android:id="@+id/edpass_auth"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="61dp"
+        android:layout_margin="16dp"
+        android:background="#FFFFFF"
+        android:backgroundTint="#FFFFFF"
         android:ems="10"
-        android:hint="saisir votre mot de passe"
-        android:inputType="textPassword" />
+        android:hint="  enter your password"
+        android:inputType="textPassword"
+        android:radius="16dp" />
+
+    <CheckBox
+        android:id="@+id/checkbox_stay_connected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stay connected"
+        android:textColor="#FFFFFF"
+        android:layout_gravity="center_horizontal"
+        android:padding="8dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,15 +61,16 @@
             android:id="@+id/btnquit_auth"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#EF3650"
-            android:text="quitter" />
+            android:text="Cancel"
+            android:textColor="#E4DFDF" />
 
         <Button
             android:id="@+id/btnvalid_auth"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#2196F3"
-            android:text="valider" />
-
+            android:backgroundTint="#FFC107"
+            android:text="Login" />
     </LinearLayout>
+
+
 </LinearLayout>

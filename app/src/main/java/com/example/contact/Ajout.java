@@ -9,7 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class Ajout extends AppCompatActivity {
-    private Button btnajouter;
+    private Button btnajouter,btnannuler;
     private EditText ednom;
     private EditText ednum;
 
@@ -17,16 +17,24 @@ public class Ajout extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ajout);
-
+        btnannuler = findViewById(R.id.btn_annuler);
         btnajouter = findViewById(R.id.btn_ajouter);
         ednom = findViewById(R.id.ednom);
         ednum = findViewById(R.id.ednum);
+        btnannuler.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ednom.setText("");
+                ednum.setText("");
+            }
+        });
+
 
         btnajouter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nom = ednom.getText().toString();
-                String numString = ednum.getText().toString();
+                String nom = ednom.getText().toString().trim();
+                String numString = ednum.getText().toString().trim();
                 int num = 0;
 
                 try {

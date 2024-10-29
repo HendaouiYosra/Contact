@@ -1,11 +1,16 @@
 package com.example.contact;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,48 +19,126 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class Contacts extends AppCompatActivity {
+
     RecyclerView rv;
     Button btnajout;
-    ArrayList<Contact> data = new ArrayList<>();
-    MyContactRecyclerAdapter ad; // Declare adapter here
-
+    ArrayList<Contact> data; // List of all contacts
+    ArrayList<Contact> filtered; // List of filtered contacts
+    MyContactRecyclerAdapter adapter;
+    ContactManager manager;
+    EditText searchtxt;
+    ImageView logout;
+    Button btnannuler;
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact2);
-
-        btnajout = findViewById(R.id.btnajout);
+        logout=findViewById(R.id.ivlogout);
         rv = findViewById(R.id.rv);
+        rv.setLayoutManager(new LinearLayoutManager(this));
+        btnajout = findViewById(R.id.btnajout);
+        manager = new ContactManager(this);
+        manager.ouvrir();
 
-        ad = new MyContactRecyclerAdapter(Contacts.this,data);
-        LinearLayoutManager manager= new LinearLayoutManager(Contacts.this,LinearLayoutManager.VERTICAL,true);
-        rv.setLayoutManager(manager);
-        rv.setAdapter(ad); // Set the adapter here
+        data = manager.getAllContact(); // Fetch all contacts
+        filtered = new ArrayList<>(); // Initialize the filtered list
+        filtered.addAll(data); // Now this will work
+        adapter = new MyContactRecyclerAdapter(this, filtered);
+        rv.setAdapter(adapter);
 
-        // Set click listener to open Ajout activity
-        btnajout.setOnClickListener(new View.OnClickListener() {
+        searchtxt = findViewById(R.id.search);
+
+        manager.fermer(); // Close the database after use
+        logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Contacts.this, Ajout.class);
-                startActivity(i); // Start Ajout activity
+                performLogout();
+            }
+        });
+        // Add a TextWatcher to the search field
+        searchtxt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filter(s.toString()); // Call the filter method when text changes
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
 
-        refreshContactList(); // Load contacts on first create
+        btnajout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Contacts.this, Ajout.class);
+                startActivityForResult(i, 1);
+            }
+        });
     }
 
+    protected void filter(String s) {
+        filtered.clear(); // Clear the filtered list
+        if (s.isEmpty()) {
+            filtered.addAll(data); // If search is empty, show all contacts
+        } else {
+            for (Contact c : data) {
+                // Check if the name or number contains the search string
+                if (c.getNom().toLowerCase().contains(s.toLowerCase()) ||
+                        String.valueOf(c.getNum()).contains(s)) {
+                    filtered.add(c); // Add contact to filtered list if matches
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged(); // Notify the adapter of the updated list
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            // Contact was added successfully
+            refreshContacts(); // Method to refresh the contact list
+        }
+    }
+
+    private void refreshContacts() {
+        manager.ouvrir(); // Open the database
+        data.clear(); // Clear the existing data
+        data.addAll(manager.getAllContact()); // Fetch updated contact list
+        filtered.clear(); // Clear filtered list
+        filtered.addAll(data); // Repopulate filtered list
+        adapter.notifyDataSetChanged(); // Notify the adapter of the changes
+        manager.fermer(); // Close the database
+    }
     @Override
     protected void onResume() {
-        super.onResume();
-        refreshContactList(); // Refresh contacts whenever the activity resumes
+
+            super.onResume();
+            refreshContacts(); // Refresh contacts on resume
+
     }
 
-    private void refreshContactList() {
-        ContactManager cm = new ContactManager(Contacts.this);
-        cm.ouvrir();
-        data.clear(); // Clear the existing data
-        data.addAll(cm.getAllContact()); // Re-fetch and add all contacts
-        ad.notifyDataSetChanged(); // Notify the adapter to refresh the ListView
-        cm.fermer(); // Close the database
+
+    private void performLogout() {
+        new AlertDialog.Builder(this)
+                .setTitle("Logout")
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Proceed with logout
+                        Intent intent = new Intent(Contacts.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .show();
     }
+
 }

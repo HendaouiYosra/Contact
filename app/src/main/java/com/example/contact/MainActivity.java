@@ -1,9 +1,11 @@
 package com.example.contact;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -17,6 +19,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //declaration
     EditText ednom,edmdp;
     private Button btnval,btnquit;
+    private CheckBox stayConnectedCheckbox;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +30,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ednom=findViewById(R.id.ednom_auth);
         btnval=findViewById(R.id.btnvalid_auth);
         btnquit=findViewById(R.id.btnquit_auth);
+        stayConnectedCheckbox = findViewById(R.id.checkbox_stay_connected);
 
+        // Load saved checkbox state
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        boolean isStayConnected = sharedPreferences.getBoolean("stay_connected", false);
+        stayConnectedCheckbox.setChecked(isStayConnected);
         // ecouteur d'action
         btnquit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View v) {
                 String nom=ednom.getText().toString();
                 String mp=edmdp.getText().toString();
-                if(nom.equalsIgnoreCase("test")&& mp.equals("test"))
+                if(nom.trim().equalsIgnoreCase("test")&& mp.trim().equals("test"))
                 {
                     Intent i=new Intent(MainActivity.this, Contacts.class);
                     i.putExtra("USER",nom);

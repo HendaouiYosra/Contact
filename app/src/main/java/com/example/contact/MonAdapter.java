@@ -52,7 +52,7 @@ public class MonAdapter extends BaseAdapter {
         // recuperation des holders
         TextView tvnom=l.findViewById(R.id.tvnom_contact);
         TextView tvnum=l.findViewById(R.id.tvnum_contact);
-        TextView tvid=l.findViewById(R.id.tvid_contact);
+
         ImageView ivcall=l.findViewById(R.id.ivcall_contact);
         ImageView ivedit=l.findViewById(R.id.ivedit_contact);
         ImageView ivdelete=l.findViewById(R.id.ivdelete_contact);
